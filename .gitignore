@@ -1,3 +1,4 @@
 src/lightning_logs/
 src/__pycache__/
 src/logs/
+outputs/

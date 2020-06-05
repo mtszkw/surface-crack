@@ -1,0 +1,3 @@
+dataset:
+  name: surface-crack-detection
+  path: 'D:/GitHub/datasets/crack-detection'
