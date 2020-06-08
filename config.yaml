@@ -2,7 +2,7 @@ dataset: "D:/GitHub/datasets/crack-detection"
 
 use_gpu: 1
 
-max_epochs: 8
+max_epochs: 2
 batch_size: 16
 
 optimizer:
@@ -10,5 +10,10 @@ optimizer:
   momentum: 0.9
 
 scheduler:
-  step_size: 2
+  step_size: 1
   gamma: 0.5
+
+training:
+  train_percent_check: 0.01
+  val_percent_check: 0.01
+  test_percent_check: 0.01

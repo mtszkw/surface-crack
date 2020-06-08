@@ -55,15 +55,17 @@ class SurfaceCrackDetectionModel(pl.LightningModule):
         labels_hat = torch.argmax(y_hat, dim=1)
         train_acc = torch.tensor(torch.sum(y == labels_hat).item() / (len(y) * 1.0))
 
-        tensorboard_logs = {'train_loss': train_loss}
-        return {'loss': train_loss, 'acc': train_acc, 'log': tensorboard_logs}
+        # tensorboard_logs = {'train/loss': train_loss}
+        return {'loss': train_loss, 'acc': train_acc}
 
     def training_epoch_end(self, outputs):
         train_epoch_acc = torch.stack([x['acc'] for x in outputs]).mean()
         train_epoch_loss = torch.stack([x['loss'] for x in outputs]).mean()
 
-        # tensorboard_logs = { 'epoch_loss': {'train': train_epoch_loss } }
-        tensorboard_logs = { 'train_epoch_loss': train_epoch_loss, 'train_epoch_acc': train_epoch_acc }
+        tensorboard_logs = {
+            'train/epoch_acc': train_epoch_acc,
+            'train/epoch_loss': train_epoch_loss,
+        }
         return {'loss': train_epoch_loss, 'log': tensorboard_logs}
 
     def validation_step(self, val_batch, batch_idx):
@@ -77,23 +79,39 @@ class SurfaceCrackDetectionModel(pl.LightningModule):
         labels_hat = torch.argmax(y_hat, dim=1)
         val_acc = torch.tensor(torch.sum(y == labels_hat).item() / (len(y) * 1.0))
 
-        # tensorboard_logs = {'val_loss': val_loss, 'val_acc': val_acc}
         return {'val_loss': val_loss, 'val_acc': val_acc}
 
     def validation_epoch_end(self, outputs):
         val_epoch_acc = torch.stack([x['val_acc'] for x in outputs]).mean()
         val_epoch_loss = torch.stack([x['val_loss'] for x in outputs]).mean()
         
-        # tensorboard_logs = { 'epoch_loss': {'val': val_epoch_loss } }
-        tensorboard_logs = { 'val_epoch_loss': val_epoch_loss, 'val_epoch_acc': val_epoch_acc }
+        tensorboard_logs = {
+            'val/epoch_acc': val_epoch_acc,
+            'val/epoch_loss': val_epoch_loss,
+        }
+
         return {'val_loss': val_epoch_loss, 'log': tensorboard_logs}
 
     def test_step(self, test_batch, batch_idx):
         x, y = test_batch
         y_hat = self.forward(x)
+
+        # Test images
+        test_images = torchvision.transforms.ToPILImage()(x[0].cpu()).convert("RGB")
+        self.logger.experiment.log_image('test_images', test_images)
+
+        # Test loss
         test_loss = self.loss_fn(y_hat, y)
-        return {'test_loss': test_loss}
+
+        # Test accuracy
+        labels_hat = torch.argmax(y_hat, dim=1)
+        test_acc = torch.tensor(torch.sum(y == labels_hat).item() / (len(y) * 1.0))
+
+        return {'test_loss': test_loss, 'test_acc': test_acc}
     
     def test_epoch_end(self, outputs):
+        test_epoch_acc = torch.stack([x['test_acc'] for x in outputs]).mean()
         test_epoch_loss = torch.stack([x['test_loss'] for x in outputs]).mean()
-        return {'test_epoch_loss': test_epoch_loss}
+        self.logger.experiment.log_metric('test_epoch_acc', test_epoch_acc)
+        self.logger.experiment.log_metric('test_epoch_loss', test_epoch_loss)
+        return {'test_epoch_loss': test_epoch_loss, 'test_epoch_acc': test_epoch_acc}
