@@ -1,22 +1,32 @@
 import os
 import hydra
-from omegaconf import DictConfig
-
 import torch
+import neptune
 import pytorch_lightning as pl
+from omegaconf import DictConfig
+from flatten_dict import flatten
 
 from src.models import SurfaceCrackDetectionModel
 
 
 @hydra.main(config_path="config.yaml")
 def run_training(cfg : DictConfig) -> None:
-    print(cfg.pretty())
 
-    tb_logger = pl.loggers.TensorBoardLogger(os.getcwd())
-    model = SurfaceCrackDetectionModel(data_path=cfg.dataset.path)
+    logger = pl.loggers.NeptuneLogger(
+        api_key=None,
+        project_name='mtszkw/surface-crack-detect',
+        params=dict(cfg),
+        tags=['binary-classification'],
+        upload_source_files=['config.yaml']
+    )
 
-    trainer = pl.Trainer(gpus=1, max_epochs=5, logger=tb_logger,
-        train_percent_check=0.1, val_percent_check=0.1, test_percent_check=0.1
+    model  = SurfaceCrackDetectionModel(hparams=dict(cfg))
+
+    trainer = pl.Trainer(
+        gpus=cfg.use_gpu,
+        max_epochs=cfg.max_epochs,
+        logger=logger,
+        train_percent_check=0.2, val_percent_check=0.2, test_percent_check=0.2
     )
 
     trainer.fit(model)
