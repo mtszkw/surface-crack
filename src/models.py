@@ -96,16 +96,23 @@ class SurfaceCrackDetectionModel(pl.LightningModule):
         x, y = test_batch
         y_hat = self.forward(x)
 
-        # Test images
-        test_images = torchvision.transforms.ToPILImage()(x[0].cpu()).convert("RGB")
-        self.logger.experiment.log_image('test_images', test_images)
-
         # Test loss
         test_loss = self.loss_fn(y_hat, y)
 
         # Test accuracy
         labels_hat = torch.argmax(y_hat, dim=1)
         test_acc = torch.tensor(torch.sum(y == labels_hat).item() / (len(y) * 1.0))
+        
+        labels_hat = torch.argmax(y_hat, dim=1)
+
+        labels_dict = {0: 'Negative', 1: 'Positive'}
+        for idx, image in enumerate(x[labels_hat != y][:6]):
+            img_name = 'misclassified/pred-{}/true-{}/'.format(
+                labels_dict[labels_hat[labels_hat != y].tolist()[idx]],
+                labels_dict[y[labels_hat != y].tolist()[idx]])
+            self.logger.experiment.log_image(
+                img_name,
+                torchvision.transforms.ToPILImage()(image.cpu()).convert("RGB"))
 
         return {'test_loss': test_loss, 'test_acc': test_acc}
     
