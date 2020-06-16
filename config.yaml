@@ -1,19 +1,33 @@
-dataset: "D:/GitHub/datasets/crack-detection"
 
+dataset:
+  path: "D:/GitHub/datasets/crack-detection"
+  # path: "D:/GitHub/datasets/SDNET2018/pavements"
+  training_pct: 0.7
+  validation_pct: 0.2
+
+# Number of GPUs used for training.
+# Passed to pytorch_lightning.Trainer class as gpus parameter.
 use_gpu: 1
 
-max_epochs: 8
-batch_size: 16
+# Configuration for Neptune logger
+# offline_mode set to True will send log data to Neptune, turn it off when only debugging.
+neptune:
+  offline_mode: False
 
+max_epochs: 6
+batch_size: 32
+
+# Optimizer parameters
 optimizer:
   lr: 0.001
   momentum: 0.9
 
+# Scheduler parameters
 scheduler:
   step_size: 1
   gamma: 0.5
 
 training:
-  train_percent_check: 0.2
-  val_percent_check: 0.2
-  test_percent_check: 0.2
+  train_percent_check: 1.0
+  val_percent_check: 1.0
+  test_percent_check: 1.0

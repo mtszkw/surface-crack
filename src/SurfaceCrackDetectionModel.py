@@ -17,15 +17,20 @@ class SurfaceCrackDetectionModel(pl.LightningModule):
     def __init__(self, hparams: DictConfig = None):
         super().__init__()
         self.hparams = hparams
-        self.model = get_model(num_classes=2)
-        self.loss_fn = nn.functional.cross_entropy
+        self.sigmoid = nn.Sigmoid()
+        self.loss_fn = nn.BCELoss()
+        # self.loss_fn = nn.BCEWithLogitsLoss()
+        self.model = get_model(num_classes=1)
+        # self.loss_fn = nn.functional.cross_entropy
+        # self.accuracy_fn = f1_score
 
     def forward(self, x):
         x = self.model(x)
-        return x
+        # return x
+        return self.sigmoid(x)
 
     def prepare_data(self):
-        self.train_ds, self.val_ds, self.test_ds = get_datasets(self.hparams['dataset'])
+        self.train_ds, self.val_ds, self.test_ds = get_datasets(**self.hparams['dataset'])
 
     def configure_optimizers(self):
         optimizer = optim.SGD(self.model.parameters(), **self.hparams['optimizer'])
@@ -34,49 +39,59 @@ class SurfaceCrackDetectionModel(pl.LightningModule):
 
     @pl.data_loader
     def train_dataloader(self):
-        return torch.utils.data.DataLoader(self.train_ds, batch_size=self.hparams['batch_size'])
+        return torch.utils.data.DataLoader(
+            dataset=self.train_ds,
+            batch_size=self.hparams['batch_size'],
+            shuffle=True)
 
     @pl.data_loader
     def val_dataloader(self):
-        return torch.utils.data.DataLoader(self.val_ds, batch_size=self.hparams['batch_size'])
+        return torch.utils.data.DataLoader(
+            dataset=self.val_ds,
+            batch_size=self.hparams['batch_size'])
 
     @pl.data_loader
     def test_dataloader(self):
-        return torch.utils.data.DataLoader(self.test_ds, batch_size=self.hparams['batch_size'])
+        return torch.utils.data.DataLoader(
+            dataset=self.test_ds,
+            batch_size=self.hparams['batch_size'])
 
     def training_step(self, train_batch, batch_idx):
         x, y = train_batch
         y_hat = self.forward(x)
-        
+        labels_hat = torch.argmax(y_hat, dim=1)
+
         # Training loss
-        train_loss = self.loss_fn(y_hat, y)
+        train_loss = self.loss_fn(y_hat.flatten(), y.float())
          
          # Training accuracy
-        labels_hat = torch.argmax(y_hat, dim=1)
+        # train_acc = torch.tensor(accuracy_fn(y, labels_hat))
         train_acc = torch.tensor(torch.sum(y == labels_hat).item() / (len(y) * 1.0))
 
-        # tensorboard_logs = {'train/loss': train_loss}
-        return {'loss': train_loss, 'acc': train_acc}
+        tensorboard_logs = {'train/loss': train_loss, 'train/acc': train_acc}
+        return {'loss': train_loss, 'acc': train_acc, 'log': tensorboard_logs}
 
     def training_epoch_end(self, outputs):
         train_epoch_acc = torch.stack([x['acc'] for x in outputs]).mean()
         train_epoch_loss = torch.stack([x['loss'] for x in outputs]).mean()
 
-        tensorboard_logs = {
-            'train/epoch_acc': train_epoch_acc,
-            'train/epoch_loss': train_epoch_loss,
-        }
-        return {'loss': train_epoch_loss, 'log': tensorboard_logs}
+        return {'loss': train_epoch_loss}
 
     def validation_step(self, val_batch, batch_idx):
         x, y = val_batch
         y_hat = self.forward(x)
+        labels_hat = torch.argmax(y_hat, dim=1)
+
+        # print('\ny', y.float().dtype, y.float())
+        # print('\ny_hat', y_hat.dtype, y_hat)
+        # print('\nlabels_hat', labels_hat.dtype, labels_hat)
+        # print('\ny_hat.flatten', y_hat.flatten(), y_hat.flatten().dtype)
 
         # Validation loss
-        val_loss = self.loss_fn(y_hat, y)
+        val_loss = self.loss_fn(y_hat.flatten(), y.float())
 
         # Validation accuracy
-        labels_hat = torch.argmax(y_hat, dim=1)
+        # val_acc = torch.tensor(accuracy_fn(y, labels_hat))
         val_acc = torch.tensor(torch.sum(y == labels_hat).item() / (len(y) * 1.0))
 
         return {'val_loss': val_loss, 'val_acc': val_acc}
@@ -95,19 +110,18 @@ class SurfaceCrackDetectionModel(pl.LightningModule):
     def test_step(self, test_batch, batch_idx):
         x, y = test_batch
         y_hat = self.forward(x)
+        labels_hat = torch.argmax(y_hat, dim=1)
 
         # Test loss
-        test_loss = self.loss_fn(y_hat, y)
+        test_loss = self.loss_fn(y_hat.flatten(), y.float())
 
         # Test accuracy
-        labels_hat = torch.argmax(y_hat, dim=1)
+        # test_acc = torch.tensor(accuracy_fn(y, labels_hat))
         test_acc = torch.tensor(torch.sum(y == labels_hat).item() / (len(y) * 1.0))
         
-        labels_hat = torch.argmax(y_hat, dim=1)
-
         labels_dict = {0: 'Negative', 1: 'Positive'}
         for idx, image in enumerate(x[labels_hat != y][:6]):
-            img_name = 'misclassified/pred-{}/true-{}/'.format(
+            img_name = 'img/pred-{}/true-{}/'.format(
                 labels_dict[labels_hat[labels_hat != y].tolist()[idx]],
                 labels_dict[y[labels_hat != y].tolist()[idx]])
             self.logger.experiment.log_image(
