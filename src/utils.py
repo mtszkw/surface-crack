@@ -17,7 +17,6 @@ def get_datasets(path, training_pct, validation_pct):
     print(f'Using {len(train_ds)} train samples, {num_positive} positive, {len(train_ds)-num_positive} negative.')
 
     train_ds.dataset.transform = transforms.Compose([
-        transforms.RandomResizedCrop(224),
         transforms.RandomHorizontalFlip(),
         transforms.ToTensor(),
         transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
@@ -46,25 +45,21 @@ def get_datasets(path, training_pct, validation_pct):
 
 # Loads pre-trained VGG16 model with frozen parameters and new FC layer.
 def get_model(num_classes):
-    model_ft = models.vgg16(pretrained=True)
-    # model_ft = models.alexnet(pretrained=True)
+    model_ft = models.alexnet(pretrained=True)
     
-    # model_ft.classifier  = nn.Sequential(
-        # nn.Dropout(0.3),
-        # nn.Linear(256 * 6 * 6, 4096),
-        # nn.ReLU(inplace=True),
-        # nn.Dropout(0.3),
-        # nn.Linear(4096, 4096),
-        # nn.ReLU(inplace=True),
-        # nn.Linear(4096, num_classes),
-    # )
-
-    # num_ftrs = model_ft.fc.in_features
-    # model_ft.fc = nn.Linear(num_ftrs, len(num_classes))
-        
     for param in model_ft.parameters():
         param.requires_grad = False
-        
-    model_ft.classifier[6] = nn.Linear(4096, num_classes)
+
+    model_ft.classifier = nn.Sequential(
+        nn.Dropout(),
+        nn.Linear(256*6*6, 4096),
+        nn.ReLU(inplace=True),
+            
+        nn.Dropout(),
+        nn.Linear(4096, 4096),
+        nn.ReLU(inplace=True),
+            
+        nn.Linear(4096, num_classes),
+    )
 
     return model_ft

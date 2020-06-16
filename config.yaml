@@ -5,29 +5,31 @@ dataset:
   training_pct: 0.7
   validation_pct: 0.2
 
-# Number of GPUs used for training.
-# Passed to pytorch_lightning.Trainer class as gpus parameter.
-use_gpu: 1
-
 # Configuration for Neptune logger
 # offline_mode set to True will send log data to Neptune, turn it off when only debugging.
 neptune:
   offline_mode: False
-
-max_epochs: 6
-batch_size: 32
+  project_name: 'mtszkw/surface-crack-detect'
+  experiment_name: 'VGG16 with custom classifier'
 
 # Optimizer parameters
 optimizer:
   lr: 0.001
-  momentum: 0.9
+  amsgrad: False
 
 # Scheduler parameters
 scheduler:
   step_size: 1
   gamma: 0.5
 
+# Training
 training:
+  use_gpu: 1
+  max_epochs: 10
+  batch_size: 32
+  val_check_interval: 0.25
+
+debugging:
   train_percent_check: 1.0
   val_percent_check: 1.0
   test_percent_check: 1.0

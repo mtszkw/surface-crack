@@ -14,12 +14,11 @@ def run_training(cfg : DictConfig) -> None:
 
     logger = pl.loggers.NeptuneLogger(
         api_key=None,
-        offline_mode=cfg.neptune.offline_mode,
-        project_name='mtszkw/surface-crack-detect',
-        experiment_name='Transfer',
         params=dict(cfg),
-        tags=['binary-classification'],
-        upload_source_files=['*.yaml']
+        tags=['binary-classification']
+        project_name=cfg.project_name,
+        experiment_name=cfg.experiment_name,
+        offline_mode=cfg.neptune.offline_mode,
     )
 
     model  = SurfaceCrackDetectionModel(hparams=dict(cfg))
@@ -27,14 +26,14 @@ def run_training(cfg : DictConfig) -> None:
     lr_logger = pl.callbacks.LearningRateLogger()
 
     trainer = pl.Trainer(
-        gpus=cfg.use_gpu,
-        max_epochs=cfg.max_epochs,
         logger=logger,
         callbacks=[lr_logger],
-        # weights_summary=None,
-        train_percent_check=cfg.training.train_percent_check,
-        val_percent_check=cfg.training.val_percent_check,
-        test_percent_check=cfg.training.test_percent_check
+        gpus=cfg.training.use_gpu,
+        max_epochs=cfg.training.max_epochs,
+        val_check_interval=cfg.training.val_check_interval,
+        train_percent_check=cfg.debugging.train_percent_check,
+        val_percent_check=cfg.debugging.val_percent_check,
+        test_percent_check=cfg.debugging.test_percent_check
     )
 
     trainer.fit(model)
