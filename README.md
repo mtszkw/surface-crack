@@ -10,10 +10,10 @@
 The datasets contains images of various concrete surfaces with and without crack. The image data are divided into two as negative (without crack) and positive (with crack) in separate folder for image classification. Each class has 20000images with a total of 40000 images with 227 x 227 pixels with RGB channels. The dataset is generated from 458 high-resolution images (4032x3024 pixel) with the method proposed by Zhang et al (2016). High resolution images found out to have high variance in terms of surface finish and illumination condition. No data augmentation in terms of random rotation or flipping or tilting is applied.
 
 ##### Positive samples
-![Positive samples](doc/positive-samples.png)
+![Positive samples](doc/positive-samples.PNG)
 
 ##### Negative samples
-![Negative samples](doc/negative-samples.png)
+![Negative samples](doc/negative-samples.PNG)
 
 ### Approach
 
