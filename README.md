@@ -7,7 +7,7 @@
 * [Concrete Crack Images for Classification](https://data.mendeley.com/datasets/5y9wdsg2zt/2)
 * [Surface Crack Detection Dataset | Kaggle](https://www.kaggle.com/arunrk7/surface-crack-detection)
 
-The datasets contains images of various concrete surfaces with and without crack. The image data are divided into two as negative (without crack) and positive (with crack) in separate folder for image classification. Each class has 20000images with a total of 40000 images with 227 x 227 pixels with RGB channels. The dataset is generated from 458 high-resolution images (4032x3024 pixel) with the method proposed by Zhang et al (2016). High resolution images found out to have high variance in terms of surface finish and illumination condition. No data augmentation in terms of random rotation or flipping or tilting is applied.
+The datasets contains images of various concrete surfaces with and without crack. The image data are divided into two as negative (without crack) and positive (with crack) in separate folder for image classification. Each class has 20000 images with a total of 40000 images with 227 x 227 pixels with RGB channels. The dataset is generated from 458 high-resolution images (4032x3024 pixel) with the method proposed by Zhang et al (2016). High resolution images found out to have high variance in terms of surface finish and illumination condition. No data augmentation in terms of random rotation or flipping or tilting is applied.
 
 ##### Positive samples
 ![Positive samples](doc/positive-samples.PNG)
@@ -17,7 +17,8 @@ The datasets contains images of various concrete surfaces with and without crack
 
 ### Approach
 
-This code uses pretrained AlexNet model ([torchvision.models](https://pytorch.org/docs/stable/torchvision/models.html)) with trainable classifier part (see layers below). Dataset has been split into train, validation and test subsets. Training parameters and configuration can be found in `config.yaml` file.
+This code uses pretrained AlexNet model ([torchvision.models](https://pytorch.org/docs/stable/torchvision/models.html)) with trainable classifier part (see layers below).  
+Dataset has been split into train, validation and test subsets. Training parameters and configuration can be found in `config.yaml` file.
 
 Classifier weights summary produced by Pytorch Lightning:
 
@@ -32,7 +33,7 @@ Classifier weights summary produced by Pytorch Lightning:
 
 ### Results
 
-Full training histories are available on [Neptune.ai](https://ui.neptune.ai/mtszkw/surface-crack-detect/experiments?viewId=standard-view). There are metric values from last five experiments (test set i.e. 10% of dataset):
+Full training histories are available on [Neptune.ai](https://ui.neptune.ai/mtszkw/surface-crack-detect/experiments?viewId=standard-view). There are metrics from last 5 experiments (test set i.e. 10% of dataset):
 
 |Experiment   	|Loss   	|F1   	|Precision   	|Recall   	|
 |---	|---	|---	|---	|---	|
