@@ -2,15 +2,13 @@ import torch
 import torch.nn as nn
 from torchvision import datasets, models, transforms
 
-def read_dataset(self, path, training_pct, validation_pct):
+def read_dataset(path, training_pct, validation_pct):
     image_folder = datasets.ImageFolder(path)
     train_size = int(training_pct * len(image_folder))
     val_size   = int(validation_pct * len(image_folder))
     test_size  = len(image_folder) - (train_size + val_size)
 
-    train_ds,
-    val_ds,
-    test_ds = torch.utils.data.random_split(image_folder, [train_size, val_size, test_size])
+    train_ds, val_ds, test_ds = torch.utils.data.random_split(image_folder, [train_size, val_size, test_size])
 
     print(f'Using {len(train_ds)} train., {len(val_ds)} valid. and {len(test_ds)} test samples.')
 

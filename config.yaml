@@ -14,7 +14,7 @@ dataset:
 # offline_mode:
 #   Set to True will send log data to Neptune, turn it off when only debugging.
 neptune:
-  offline_mode: False
+  offline_mode: True
   project_name: 'mtszkw/surface-crack-detect'
   experiment_name: 'VGG16 with custom classifier'
 
