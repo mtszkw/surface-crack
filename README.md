@@ -42,3 +42,9 @@ Full training histories are available on [Neptune.ai](https://ui.neptune.ai/mtsz
 |SUR-121   	|0.0084417   	|0.997644   	|0.996335   	|0.999034   	|
 |SUR-120   	|0.00985253   	|0.997192   	|0.995856   	|0.998618   	|
 |SUR-119   	|0.00772782   	|0.998859   	|0.998836   	|0.998923   	|
+
+##### False Positives
+![False Positives](doc/false-positives.PNG)
+
+##### False Negative
+![False Negative](doc/false-negatives.PNG)
