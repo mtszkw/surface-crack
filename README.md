@@ -17,26 +17,10 @@ The datasets contains images of various concrete surfaces with and without crack
 
 ### Approach
 
-This code uses pretrained AlexNet model ([torchvision.models](https://pytorch.org/docs/stable/torchvision/models.html)) with trainable classifier part (see below layers in model.classifier). Dataset has been split into train, validation and test subsets. 
+This code uses pretrained AlexNet model ([torchvision.models](https://pytorch.org/docs/stable/torchvision/models.html)) with trainable classifier part (see layers below). Dataset has been split into train, validation and test subsets. Training parameters and configuration can be found in `config.yaml` file.
 
-Model weights summary produced by Pytorch Lightning:
+Classifier weights summary produced by Pytorch Lightning:
 
-> 2  | model              | AlexNet           | 57 M  
-> 3  | model.features     | Sequential        | 2 M  
-> 4  | model.features.0   | Conv2d            | 23 K  
-> 5  | model.features.1   | ReLU              | 0  
-> 6  | model.features.2   | MaxPool2d         | 0  
-> 7  | model.features.3   | Conv2d            | 307 K  
-> 8  | model.features.4   | ReLU              | 0  
-> 9  | model.features.5   | MaxPool2d         | 0  
-> 10 | model.features.6   | Conv2d            | 663 K  
-> 11 | model.features.7   | ReLU              | 0  
-> 12 | model.features.8   | Conv2d            | 884 K  
-> 13 | model.features.9   | ReLU              | 0  
-> 14 | model.features.10  | Conv2d            | 590 K  
-> 15 | model.features.11  | ReLU              | 0  
-> 16 | model.features.12  | MaxPool2d         | 0  
-> 17 | model.avgpool      | AdaptiveAvgPool2d | 0  
 > 18 | model.classifier   | Sequential        | 54 M  
 > 19 | model.classifier.0 | Dropout           | 0  
 > 20 | model.classifier.1 | Linear            | 37 M  
@@ -48,3 +32,14 @@ Model weights summary produced by Pytorch Lightning:
 
 ### Results
 
+Training experiments are available on [Neptune.ai page](https://ui.neptune.ai/mtszkw/surface-crack-detect/experiments?viewId=standard-view).
+
+There are metric values from last five experiments:
+
+|Experiment   	|Loss   	|F1   	|Precision   	|Recall   	|
+|---	|---	|---	|---	|---	|
+|SUR-123   	|0.0111392   	|0.99682   	|   	|0.996124   	|
+|SUR-122   	|0.0391901   	|0.996263   	|0.9977   	|0.994944   	|
+|SUR-121   	|0.0084417   	|0.997644   	|0.996335   	|0.999034   	|
+|SUR-120   	|0.00985253   	|0.997192   	|0.995856   	|0.998618   	|
+|SUR-119   	|0.00772782   	|0.998859   	|0.998836   	|0.998923   	|

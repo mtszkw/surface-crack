@@ -1,8 +1,0 @@
-language: python
-python:
-    - "3.6"
-
-install : "sudo pip install -r requirements.txt"
-
-before_script:
-    - flake8 --count --ignore E402,F401,E501
