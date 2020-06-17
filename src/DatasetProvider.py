@@ -17,8 +17,8 @@ def read_dataset(path, training_pct, validation_pct):
 
     train_ds.dataset.transform = transforms.Compose([
         transforms.RandomHorizontalFlip(),
-        transforms.ToTensor(),
-        transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
+        transforms.ToTensor()
+        # transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
     ])
 
     # Validation
@@ -26,8 +26,8 @@ def read_dataset(path, training_pct, validation_pct):
     print(f'Using {len(val_ds)} val. samples, {num_positive} positive, {len(val_ds)-num_positive} negative.')
 
     val_ds.dataset.transform =  transforms.Compose([
-        transforms.ToTensor(),
-        transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
+        transforms.ToTensor()
+        # transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
     ])
 
     # Test
@@ -35,8 +35,8 @@ def read_dataset(path, training_pct, validation_pct):
     print(f'Using {len(test_ds)} test samples, {num_positive} positive, {len(test_ds)-num_positive} negative.')
 
     test_ds.dataset.transform = transforms.Compose([
-        transforms.ToTensor(),
-        transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
+        transforms.ToTensor()
+        # transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
     ])
 
     return train_ds, val_ds, test_ds

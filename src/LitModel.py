@@ -7,11 +7,11 @@ import pytorch_lightning as pl
 
 import matplotlib.pyplot as plt
 from omegaconf import DictConfig
-# from scikitplot.metrics import plot_confusion_matrix
 from sklearn.metrics import f1_score, precision_recall_fscore_support
 
 from src.AlexNet import alex_net
 from src.DatasetProvider import read_dataset
+from src.utils import make_weights_for_balanced_classes
 
 
 class LitModel(pl.LightningModule):
@@ -43,6 +43,12 @@ class LitModel(pl.LightningModule):
 
     @pl.data_loader
     def train_dataloader(self):
+        # weights = make_weights_for_balanced_classes(self.train_ds.imgs, len(self.train_ds.classes))
+        # weights = torch.DoubleTensor(weights)
+        # sampler = torch.utils.data.sampler.WeightedRandomSampler(weights, len(weights))
+        # train_loader = torch.utils.data.DataLoader(dataset_train, batch_size=args.batch_size,shuffle = True,
+            # sampler = sampler, num_workers=args.workers, pin_memory=True)
+
         return torch.utils.data.DataLoader(
             dataset=self.train_ds,
             batch_size=self.hparams['training']['batch_size'],
@@ -85,7 +91,6 @@ class LitModel(pl.LightningModule):
 
 
     def training_epoch_end(self, outputs):
-        # train_epoch_acc = torch.stack([x['f1'] for x in outputs]).mean()
         train_epoch_loss = torch.stack([x['loss'] for x in outputs]).mean()
         return {'loss': train_epoch_loss}
 
@@ -138,15 +143,17 @@ class LitModel(pl.LightningModule):
             'test/f1': test_f1,
             'test/prec': test_prec,
             'test/recall': test_recall
+        }
 
         labels_dict = {0: 'Negative', 1: 'Positive'}
-        for idx, image in enumerate(x[labels_hat != y][:6]):
-            img_name = 'img/pred-{}/true-{}/'.format(
-                labels_dict[labels_hat[labels_hat != y].tolist()[idx]],
-                labels_dict[y[labels_hat != y].tolist()[idx]])
-            self.logger.experiment.log_image(
-                img_name,
-                torchvision.transforms.ToPILImage()(image.cpu()).convert("RGB"))
+        labels_hat = labels_hat.flatten()
+        wrong_ids_mask = torch.ne(labels_hat, y).nonzero().flatten().tolist()
+
+        if len(wrong_ids_mask) > 0:
+            for idx in wrong_ids_mask:
+                img_name = f'test/pred-{labels_dict[labels_hat[idx].item()]}/true-{labels_dict[y[idx].item()]}/'
+                self.logger.experiment.log_image(img_name,
+                    torchvision.transforms.ToPILImage()(x[idx].cpu()).convert("RGB"))
 
         return {'test_loss': test_loss, 'test_f1': test_f1, 'test_recall': test_recall, 'test_prec': test_prec}
     

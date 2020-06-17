@@ -7,26 +7,26 @@
 dataset:
   path: "D:/GitHub/datasets/crack-detection"
   # path: "D:/GitHub/datasets/SDNET2018/pavements"
-  training_pct: 0.7
-  validation_pct: 0.2
+  training_pct: 0.8
+  validation_pct: 0.1
 
 # Configuration for Neptune logger.
 # offline_mode:
 #   Set to True will send log data to Neptune, turn it off when only debugging.
 neptune:
-  offline_mode: True
+  offline_mode: False
   project_name: 'mtszkw/surface-crack-detect'
-  experiment_name: 'VGG16 with custom classifier'
+  experiment_name: 'Transfer-learning (AlexNet)'
 
 # Optimizer parameters
 optimizer:
-  lr: 0.001
+  lr: 0.0005
   amsgrad: False
 
 # Scheduler parameters
 scheduler:
   step_size: 1
-  gamma: 0.5
+  gamma: 0.8
 
 # Training
 # use_gpu:
@@ -39,9 +39,9 @@ scheduler:
 #   Contols how often validation set should be used (if float = % epochs, if int = # steps).
 training:
   use_gpu: 1
-  max_epochs: 10
-  batch_size: 32
-  val_check_interval: 0.25
+  max_epochs: 5
+  batch_size: 64
+  val_check_interval: 0.2
 
 # Debug features
 # train/val/test_percent_check:

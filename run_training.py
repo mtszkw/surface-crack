@@ -18,10 +18,12 @@ def run_training(cfg : DictConfig) -> None:
     model  = LitModel(hparams=dict(cfg))
 
     lr_logger = pl.callbacks.LearningRateLogger()
+    early_stopping = pl.callbacks.EarlyStopping('val_loss')
 
     trainer = pl.Trainer(
         logger=logger,
         callbacks=[lr_logger],
+        early_stop_callback=early_stopping,
         gpus=cfg.training.use_gpu,
         max_epochs=cfg.training.max_epochs,
         val_check_interval=cfg.training.val_check_interval,
