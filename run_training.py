@@ -11,7 +11,7 @@ def run_training(cfg : DictConfig) -> None:
     logger = pl.loggers.NeptuneLogger(
         api_key=None,
         params=dict(cfg),
-        tags=['binary-classification']
+        tags=['binary-classification'],
         project_name=cfg.project_name,
         experiment_name=cfg.experiment_name,
         offline_mode=cfg.neptune.offline_mode,

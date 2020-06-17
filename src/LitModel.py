@@ -11,7 +11,7 @@ from sklearn.metrics import f1_score
 from scikitplot.metrics import plot_confusion_matrix
 
 from src.AlexNet import alex_net
-from src.DatasetProvider import DatasetProvider
+from src.DatasetProvider import read_dataset
 
 
 class LitModel(pl.LightningModule):
@@ -27,7 +27,7 @@ class LitModel(pl.LightningModule):
         return self.sigmoid(x)
 
     def prepare_data(self):
-        self.train_ds, self.val_ds, self.test_ds = DatasetProvider(**self.hparams['dataset']).read()
+        self.train_ds, self.val_ds, self.test_ds = read_dataset(**self.hparams['dataset'])
 
     def configure_optimizers(self):
         optimizer = optim.Adam(self.model.parameters(), **self.hparams['optimizer'])
