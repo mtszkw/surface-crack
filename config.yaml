@@ -1,12 +1,18 @@
 
+# path:
+#   Path to dataset which subdirectories corresponding to target labels (e.g. positive/negative).
+# training/validation_pct:
+#   % of training/validation subsets after train_test_split.
+#   Test set % will be calculated as (1 - training_pct - validation_pct).
 dataset:
   path: "D:/GitHub/datasets/crack-detection"
   # path: "D:/GitHub/datasets/SDNET2018/pavements"
   training_pct: 0.7
   validation_pct: 0.2
 
-# Configuration for Neptune logger
-# offline_mode set to True will send log data to Neptune, turn it off when only debugging.
+# Configuration for Neptune logger.
+# offline_mode:
+#   Set to True will send log data to Neptune, turn it off when only debugging.
 neptune:
   offline_mode: False
   project_name: 'mtszkw/surface-crack-detect'
@@ -23,12 +29,24 @@ scheduler:
   gamma: 0.5
 
 # Training
+# use_gpu:
+#   Passed to pytorch_lightning.Trainer as number of GPUs to be used for training.
+# max_epochs:
+#   Maximum number of training epochs
+# batch_size:
+#   Batch size
+# val_check_interval:
+#   Contols how often validation set should be used (if float = % epochs, if int = # steps).
 training:
   use_gpu: 1
   max_epochs: 10
   batch_size: 32
   val_check_interval: 0.25
 
+# Debug features
+# train/val/test_percent_check:
+#   Used in pytorch_lightning.Trainer.fit method, allows to use only a % of training/validation/test set.
+#   Useful for quick runs.
 debugging:
   train_percent_check: 1.0
   val_percent_check: 1.0

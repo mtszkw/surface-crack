@@ -1,12 +1,8 @@
-import os
 import hydra
-import torch
-import neptune
 import pytorch_lightning as pl
-
 from omegaconf import DictConfig
-from flatten_dict import flatten
-from src.SurfaceCrackDetectionModel import SurfaceCrackDetectionModel
+
+from src.LitModel import LitModel
 
 
 @hydra.main(config_path="config.yaml")
@@ -21,7 +17,7 @@ def run_training(cfg : DictConfig) -> None:
         offline_mode=cfg.neptune.offline_mode,
     )
 
-    model  = SurfaceCrackDetectionModel(hparams=dict(cfg))
+    model  = LitModel(hparams=dict(cfg))
 
     lr_logger = pl.callbacks.LearningRateLogger()
 

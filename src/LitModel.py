@@ -10,23 +10,24 @@ from omegaconf import DictConfig
 from sklearn.metrics import f1_score
 from scikitplot.metrics import plot_confusion_matrix
 
-from src.utils import get_datasets, get_model
+from src.AlexNet import alex_net
+from src.DatasetProvider import DatasetProvider
 
 
-class SurfaceCrackDetectionModel(pl.LightningModule):
+class LitModel(pl.LightningModule):
     def __init__(self, hparams: DictConfig = None):
         super().__init__()
         self.hparams = hparams
         self.sigmoid = nn.Sigmoid()
         self.loss_fn = nn.BCELoss()
-        self.model = get_model(num_classes=1)
+        self.model = alex_net(num_classes=1)
 
     def forward(self, x):
         x = self.model(x)
         return self.sigmoid(x)
 
     def prepare_data(self):
-        self.train_ds, self.val_ds, self.test_ds = get_datasets(**self.hparams['dataset'])
+        self.train_ds, self.val_ds, self.test_ds = DatasetProvider(**self.hparams['dataset']).read()
 
     def configure_optimizers(self):
         optimizer = optim.Adam(self.model.parameters(), **self.hparams['optimizer'])
