@@ -32,13 +32,11 @@ Classifier weights summary produced by Pytorch Lightning:
 
 ### Results
 
-Training experiments are available on [Neptune.ai page](https://ui.neptune.ai/mtszkw/surface-crack-detect/experiments?viewId=standard-view).
-
-There are metric values from last five experiments:
+Full training histories are available on [Neptune.ai](https://ui.neptune.ai/mtszkw/surface-crack-detect/experiments?viewId=standard-view). There are metric values from last five experiments (test set i.e. 10% of dataset):
 
 |Experiment   	|Loss   	|F1   	|Precision   	|Recall   	|
 |---	|---	|---	|---	|---	|
-|SUR-123   	|0.0111392   	|0.99682   	|   	|0.996124   	|
+|SUR-123   	|0.0111392   	|0.99682   	|0.996124   	|0.997614   	|
 |SUR-122   	|0.0391901   	|0.996263   	|0.9977   	|0.994944   	|
 |SUR-121   	|0.0084417   	|0.997644   	|0.996335   	|0.999034   	|
 |SUR-120   	|0.00985253   	|0.997192   	|0.995856   	|0.998618   	|
